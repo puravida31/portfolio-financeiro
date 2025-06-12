@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Financeiro - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-chart-line"></i>
+                    <h1>Portfolio Financeiro</h1>
+                </div>
+                <nav class="nav">
+                    <a href="#dashboard" class="nav-link active" data-section="dashboard">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a href="#portfolio" class="nav-link" data-section="portfolio">
+                        <i class="fas fa-briefcase"></i> Carteira
+                    </a>
+                    <a href="#analysis" class="nav-link" data-section="analysis">
+                        <i class="fas fa-chart-bar"></i> Análise
+                    </a>
+                    <a href="#recommendations" class="nav-link" data-section="recommendations">
+                        <i class="fas fa-lightbulb"></i> Recomendações
+                    </a>
+                    <a href="#settings" class="nav-link" data-section="settings">
+                        <i class="fas fa-cog"></i> Configurações
+                    </a>
+                </nav>
+                <div class="header-actions">
+                    <button class="btn-refresh" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <div class="theme-toggle">
+                        <button onclick="toggleTheme()">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section active">
+                <div class="section-header">
+                    <h2>Dashboard Financeiro</h2>
+                    <p>Visão geral do seu patrimônio e performance</p>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="summary-grid">
+                    <div class="card summary-card">
+                        <div class="card-header">
+                            <h3>Patrimônio Total</h3>
+                            <i class="fas fa-wallet icon-primary"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="value" id="total-value">R$ 605.798</div>
+                            <div class="change positive" id="total-change">+R$ 74.146 (+13,95%)</div>
+                        </div>
+                    </div>
+
+                    <div class="card summary-card">
+                        <div class="card-header">
+                            <h3>Investido</h3>
+                            <i class="fas fa-coins icon-secondary"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="value" id="invested-value">R$ 531.653</div>
+                            <div class="subtitle">Valor total aplicado</div>
+                        </div>
+                    </div>
+
+                    <div class="card summary-card">
+                        <div class="card-header">
+                            <h3>Posições</h3>
+                            <i class="fas fa-chart-pie icon-accent"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="value" id="positions-count">57</div>
+                            <div class="subtitle">Ativos na carteira</div>
+                        </div>
+                    </div>
+
+                    <div class="card summary-card">
+                        <div class="card-header">
+                            <h3>Score Geral</h3>
+                            <i class="fas fa-star icon-warning"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="value" id="portfolio-score">78,0/100</div>
+                            <div class="subtitle">Muito Bom</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="charts-grid">
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <h3>Distribuição por Classe</h3>
+                        </div>
+                        <div class="card-content">
+                            <canvas id="assetDistributionChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <h3>Performance por Setor</h3>
+                        </div>
+                        <div class="card-content">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="card activity-card">
+                    <div class="card-header">
+                        <h3>Atividade Recente</h3>
+                        <button class="btn-secondary">Ver Todas</button>
+                    </div>
+                    <div class="card-content">
+                        <div class="activity-list" id="activity-list">
+                            <!-- Activities will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Portfolio Section -->
+            <section id="portfolio" class="section">
+                <div class="section-header">
+                    <h2>Minha Carteira</h2>
+                    <p>Detalhes de todas as suas posições</p>
+                </div>
+
+                <!-- Portfolio Filters -->
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Filtrar por tipo:</label>
+                        <select id="asset-type-filter">
+                            <option value="all">Todos</option>
+                            <option value="FII">FIIs</option>
+                            <option value="Stock">Ações US</option>
+                            <option value="REIT">REITs</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Ordenar por:</label>
+                        <select id="sort-filter">
+                            <option value="value">Valor</option>
+                            <option value="performance">Performance</option>
+                            <option value="ticker">Ticker</option>
+                        </select>
+                    </div>
+                    <div class="search-group">
+                        <input type="text" id="search-input" placeholder="Buscar ativo...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+
+                <!-- Portfolio Table -->
+                <div class="card table-card">
+                    <div class="table-container">
+                        <table class="portfolio-table" id="portfolio-table">
+                            <thead>
+                                <tr>
+                                    <th>Ativo</th>
+                                    <th>Tipo</th>
+                                    <th>Quantidade</th>
+                                    <th>Preço Médio</th>
+                                    <th>Valor Atual</th>
+                                    <th>Performance</th>
+                                    <th>Peso</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="portfolio-tbody">
+                                <!-- Portfolio data will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analysis Section -->
+            <section id="analysis" class="section">
+                <div class="section-header">
+                    <h2>Análise Detalhada</h2>
+                    <p>Métricas avançadas e insights da carteira</p>
+                </div>
+
+                <!-- Analysis Cards -->
+                <div class="analysis-grid">
+                    <div class="card metric-card">
+                        <div class="card-header">
+                            <h3>Performance</h3>
+                            <div class="score-badge score-good">77,9/100</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric-item">
+                                <span>Retorno Total:</span>
+                                <span class="positive">+13,95%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span>Melhor Ativo:</span>
+                                <span>LRCX (+1.164%)</span>
+                            </div>
+                            <div class="metric-item">
+                                <span>Pior Ativo:</span>
+                                <span class="negative">CPRT (-50,9%)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card metric-card">
+                        <div class="card-header">
+                            <h3>Diversificação</h3>
+                            <div class="score-badge score-excellent">100/100</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric-item">
+                                <span>Total de Ativos:</span>
+                                <span>57 posições</span>
+                            </div>
+                            <div class="metric-item">
+                                <span>Classes de Ativo:</span>
+                                <span>3 tipos</span>
+                            </div>
+                            <div class="metric-item">
+                                <span>Concentração Top 10:</span>
+                                <span class="warning">76,1%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card metric-card">
+                        <div class="card-header">
+                            <h3>Volatilidade</h3>
+                            <div class="score-badge score-average">56,0/100</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric-item">
+                                <span>Volatilidade Média:</span>
+                                <span>44,0%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span>Ativos Alto Risco:</span>
+                                <span class="warning">16 posições</span>
+                            </div>
+                            <div class="metric-item">
+                                <span>Beta da Carteira:</span>
+                                <span>1,15</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Risk Analysis -->
+                <div class="card risk-card">
+                    <div class="card-header">
+                        <h3>Análise de Risco</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="risk-alerts">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <div>
+                                    <strong>Concentração Elevada:</strong>
+                                    <p>Top 10 posições representam 76,1% da carteira. Considere rebalanceamento.</p>
+                                </div>
+                            </div>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                <div>
+                                    <strong>Volatilidade Moderada:</strong>
+                                    <p>16 posições com volatilidade >50%. Considere adicionar ativos defensivos.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recommendations Section -->
+            <section id="recommendations" class="section">
+                <div class="section-header">
+                    <h2>Recomendações</h2>
+                    <p>Sugestões personalizadas para otimizar sua carteira</p>
+                </div>
+
+                <div class="recommendations-grid">
+                    <div class="card recommendation-card buy">
+                        <div class="card-header">
+                            <h3>Comprar Mais</h3>
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="recommendation-list" id="buy-recommendations">
+                                <!-- Buy recommendations will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card recommendation-card rebalance">
+                        <div class="card-header">
+                            <h3>Rebalancear</h3>
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="recommendation-list" id="rebalance-recommendations">
+                                <!-- Rebalance recommendations will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card recommendation-card watch">
+                        <div class="card-header">
+                            <h3>Monitorar</h3>
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="recommendation-list" id="watch-recommendations">
+                                <!-- Watch recommendations will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="section">
+                <div class="section-header">
+                    <h2>Configurações</h2>
+                    <p>Personalize sua experiência</p>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="card settings-card">
+                        <div class="card-header">
+                            <h3>Preferências Gerais</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="setting-item">
+                                <label>Moeda de Exibição:</label>
+                                <select id="currency-setting">
+                                    <option value="BRL">Real (R$)</option>
+                                    <option value="USD">Dólar (US$)</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label>Tema:</label>
+                                <select id="theme-setting">
+                                    <option value="light">Claro</option>
+                                    <option value="dark">Escuro</option>
+                                    <option value="auto">Automático</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label>Atualização Automática:</label>
+                                <input type="checkbox" id="auto-refresh" checked>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card settings-card">
+                        <div class="card-header">
+                            <h3>Dados da Carteira</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="setting-item">
+                                <label>Importar Dados:</label>
+                                <input type="file" id="import-data" accept=".csv,.json">
+                            </div>
+                            <div class="setting-item">
+                                <label>Exportar Dados:</label>
+                                <button class="btn-secondary" onclick="exportData()">Baixar CSV</button>
+                            </div>
+                            <div class="setting-item">
+                                <label>Última Atualização:</label>
+                                <span id="last-update">12/06/2025 12:37</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Portfolio Financeiro. Desenvolvido para acompanhamento pessoal.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="data.js"></script>
+    <script src="charts.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
+

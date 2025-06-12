@@ -1,0 +1,34 @@
+{
+  "name": "portfolio-financeiro",
+  "version": "1.0.0",
+  "description": "Dashboard completo para acompanhamento de investimentos pessoais",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "serve": "python3 -m http.server 8000",
+    "build": "echo 'Site estático - não requer build'",
+    "deploy": "echo 'Deploy via GitHub Pages'"
+  },
+  "keywords": [
+    "portfolio",
+    "investimentos",
+    "dashboard",
+    "financeiro",
+    "github-pages"
+  ],
+  "author": "Portfolio Financeiro",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/usuario/portfolio-financeiro.git"
+  },
+  "homepage": "https://usuario.github.io/portfolio-financeiro",
+  "dependencies": {},
+  "devDependencies": {},
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
+
