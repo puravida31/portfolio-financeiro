@@ -1,63 +1,36 @@
-<!-- Nova seção para o Radar de Ações de IA -->
-<section id="ai-radar" class="section">
-  <h2>📊 AI Stock Radar</h2>
-  <div class="stock-summary">
-    <table class="ai-stock-table">
-      <thead>
-        <tr>
-          <th>Empresa</th>
-          <th>Preço Atual (USD)</th>
-          <th>Variação</th>
-          <th>Desempenho (5 anos)</th>
-          <th>Comentário</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>NVIDIA</td>
-          <td id="nvda-price">...</td>
-          <td id="nvda-change">...</td>
-          <td><canvas id="nvda-chart" width="100" height="40"></canvas></td>
-          <td><span title="Líder em chips para IA. Forte crescimento.">🔍</span></td>
-        </tr>
-        <tr>
-          <td>Microsoft</td>
-          <td id="msft-price">...</td>
-          <td id="msft-change">...</td>
-          <td><canvas id="msft-chart" width="100" height="40"></canvas></td>
-          <td><span title="Diversificada com Azure + OpenAI.">🔍</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</section>
 
-<style>
-  .ai-stock-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95rem;
-  }
-  .ai-stock-table th, .ai-stock-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-  }
-  .ai-stock-table th {
-    background-color: #f2f2f2;
-  }
-</style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Radar v17.0 – Painel Interativo com Preços Reais</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="fetch_prices.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #1a202c; color: #eee; padding: 20px; }
+    h2, h3 { color: #63b3ed; }
+    table { width: 100%; margin-top: 20px; border-collapse: collapse; }
+    th, td { padding: 10px; border: 1px solid #444; text-align: center; }
+    th { background: #2d3748; }
+    .progress-container { margin-top: 20px; }
+    .bar { background: #2d3748; border-radius: 8px; overflow: hidden; margin: 10px 0; }
+    .fill { height: 24px; background: #48bb78; text-align: right; padding-right: 10px; color: white; line-height: 24px; }
+  </style>
+</head>
+<body>
+  <h2>📊 AI Radar v17.0 – Metas & Preços ao Vivo</h2>
 
-<script>
-  // Simulador de valores (você pode substituir por chamadas reais de API)
-  const prices = {
-    nvda: { price: 144.55, change: "+1.20%" },
-    msft: { price: 477.07, change: "+0.94%" },
-  };
-
-  document.getElementById('nvda-price').innerText = `$${prices.nvda.price}`;
-  document.getElementById('nvda-change').innerText = prices.nvda.change;
-
-  document.getElementById('msft-price').innerText = `$${prices.msft.price}`;
-  document.getElementById('msft-change').innerText = prices.msft.change;
-</script>
+  <table id="price-table">
+    <thead>
+      <tr><th>Empresa</th><th>Ticker</th><th>Preço Atual (USD)</th><th>Meta (USD)</th><th>Progresso</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>NVIDIA</td><td>NVDA</td><td id="NVDA-price">⏳</td><td>1200</td><td><div class="bar"><div id="NVDA-bar" class="fill" style="width:0%">0%</div></div></td></tr>
+      <tr><td>Microsoft</td><td>MSFT</td><td id="MSFT-price">⏳</td><td>950</td><td><div class="bar"><div id="MSFT-bar" class="fill" style="width:0%">0%</div></div></td></tr>
+      <tr><td>Google</td><td>GOOGL</td><td id="GOOGL-price">⏳</td><td>300</td><td><div class="bar"><div id="GOOGL-bar" class="fill" style="width:0%">0%</div></div></td></tr>
+      <tr><td>Amazon</td><td>AMZN</td><td id="AMZN-price">⏳</td><td>250</td><td><div class="bar"><div id="AMZN-bar" class="fill" style="width:0%">0%</div></div></td></tr>
+      <tr><td>Meta</td><td>META</td><td id="META-price">⏳</td><td>520</td><td><div class="bar"><div id="META-bar" class="fill" style="width:0%">0%</div></div></td></tr>
+    </tbody>
+  </table>
+</body>
+</html>
